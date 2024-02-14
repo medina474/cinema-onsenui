@@ -8,41 +8,353 @@
   <link rel="stylesheet" href="onsenui/css/onsenui.css">
   <link rel="stylesheet" href="onsenui/css/onsen-css-components.min.css">
   <script src="onsenui/js/onsenui.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 
 <body>
-    <ons-navigator swipeable id="onsenNavigator" page="home.html"></ons-navigator>
-    
-    <template id="home.html">
-      <ons-page id="home">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 35">
-          <path fill="#663399" d="M0 0h32v30q-16 5 -32 0" />
-          <text fill="#fff" x="16" y="5" font-size="3" text-anchor="middle">Cinéma</text>
-          <path fill="#fff" d="m 7.49,13.72 v 8.9 a 1.92,1.92 0 0 0 1.92,1.92 h 13.8 a 1.92,1.92 0 0 0 1.92,-1.92 v -7.93 a 1,1 0 0 0 -1,-1 H 7.49 m 10.84,5.81 -2.56,2 a 0.53,0.53 0 0 1 -0.75,0 0.51,0.51 0 0 1 -0.15,-0.37 V 17.1 a 0.52,0.52 0 0 1 0.9,-0.37 l 2.56,2 a 0.53,0.53 0 0 1 0,0.77 z" />
-          <path fill="#fff" d="M 24.83,10.33 24.56,8.39 A 1,1 0 0 0 23.47,7.57 h -0.3 l -1,3.11 -2.79,0.39 1,-3.11 -1.07,0.15 -1.58,0.22 -1,3.11 -2.73,0.42 1,-3.1 -1.1,0.15 -1.55,0.22 -1,3.1 -2.78,0.39 1,-3.11 -1.67,0.23 a 1,1 0 0 0 -0.82,1.08 v 0 l 0.28,2 0.13,0.93 L 24,11.42 a 1,1 0 0 0 0.83,-1.08 z" />
-        </svg>
-        <style>
-          .icone {
-            background-color: #663399; color:#fff;
-            border-radius: 50%;width:18vw; height:18vw;
-            display: flex; justify-content: center; align-items: center;
-          }
-        </style>
-        <div style="display: flex; justify-content: space-evenly">
-          <div class="icone"><ons-icon icon="fa-map-marker" size="9vw" 
-            onclick="document.querySelector('#myNavigator').pushPage('carte.html')" />
-          </div>
-          <div class="icone">
-          <ons-icon icon="fa-theater-masks" size="9vw" 
-            onclick="document.querySelector('#myNavigator').pushPage('page1.html')" />
-          </div>
-          <div class="icone">
-            <ons-icon icon="fa-ticket" size="9vw" 
-              onclick="document.querySelector('#myNavigator').pushPage('ticket.html')" />
-            </div>
-        </div>
+  <ons-navigator swipeable id="onsenNavigator" page="home.html"></ons-navigator>
+
+  <template id="page1.html">
+    <ons-page id="page1">
+      <ons-toolbar>
+        <div class="left"><ons-back-button>Home</ons-back-button></div>
+        <div class="center">Acteurs</div>
+      </ons-toolbar>
+      <ons-list>
+        <ons-lazy-repeat></ons-lazy-repeat>
+      </ons-list>
+    </ons-page>
+  </template>
+
+  <template id="ligne_personne">
+    <ons-list-item modifier="chevron" tappable>
+      <div class="left">
+        <img class="list-item__thumbnail" src="_inconnu.jpg">
+      </div>
+      <div class="center">
+        <span class="list-item__title">
+          <span class="prenom"></span>&nbsp;
+          <strong class="nom"></strong>
+          <span class="nbFilm notification"></span>
+        </span>
+        <span class="list-item__subtitle">
+          <span class="naissance"></span>&nbsp;
+          <span class="deces"></span>
+        </span>
+      </div>
+
+    </ons-list-item>
+  </template>
+
+    <template id="page2.html">
+      <ons-page id="page2">
+        <ons-toolbar>
+          <div class="left"><ons-back-button>Page 1</ons-back-button></div>
+          <div class="center"></div>
+        </ons-toolbar>
+        <ons-list>
+        </ons-list>
       </ons-page>
     </template>
+
+    <template id="film.html">
+      <ons-page id="film">
+        <ons-toolbar>
+          <div class="left"><ons-back-button>Film</ons-back-button></div>
+          <div class="center"></div>
+        </ons-toolbar>
+
+        <div class="titre"> </div>
+        <div>durée <span class="duree"></span> min</div>
+        <div>sortie <span class="sortie"></span></div>
+        <img src="films/1x1.png" width="300">
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 0 500 100" class="stars">
+          <defs>
+            <symbol id="star">
+              <path d="m50,2 12,34h36l-28,22 10,34-30-20-30,20 10-34-28-22h36z" />
+            </symbol>
+            <style>
+              .decoupe {
+                clip-path: polygon(0 0, var(--pvote) 0, var(--pvote) 100%, 0 100%);
+              }
+            </style>
+          </defs>
+          <g>
+            <use xlink:href="#star" x="0" onclick="Voter(1)" />
+            <use xlink:href="#star" x="100" onclick="Voter(2)" />
+            <use xlink:href="#star" x="200" onclick="Voter(3)" />
+            <use xlink:href="#star" x="300" onclick="Voter(4)" />
+            <use xlink:href="#star" x="400" onclick="Voter(5)" />
+          </g>
+          <g fill="gold" class="decoupe">
+            <use xlink:href="#star" x="0" onclick="Voter(1)" />
+            <use xlink:href="#star" x="100" onclick="Voter(2)" />
+            <use xlink:href="#star" x="200" onclick="Voter(3)" />
+            <use xlink:href="#star" x="300" onclick="Voter(4)" />
+            <use xlink:href="#star" x="400" onclick="Voter(5)" />
+          </g>
+
+        </svg>
+
+      </ons-page>
+    </template>
+<script>
+
+  async function Voter(note) {
+
+    // onsenNavigator.topPage = page courante
+    let moyenne = onsenNavigator.topPage.data.note_moyenne ?? 0; // null -> 0
+    let nombre = onsenNavigator.topPage.data.note_nombre ?? 0;
+    let nouvelle_moyenne = ((moyenne * nombre) + note) / (nombre + 1);
+    nombre = nombre + 1;
+
+    const body = {
+      "note_moyenne": nouvelle_moyenne,
+      "note_nombre": nombre
+    }
+
+    const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/rest/v1/films?id=eq.${onsenNavigator.topPage.data.id}&select=*`,
+      {
+        method: "PUT",
+        body: JSON.stringify(body)
+      });
+
+    colorier(onsenNavigator.topPage, nouvelle_moyenne)
+
+    onsenNavigator.topPage.data.note_moyenne = nouvelle_moyenne;
+    onsenNavigator.topPage.data.note_nombre = nombre;
+  }
+
+  function colorier(page, note) {
+    page.querySelector("svg.stars")
+      .style.setProperty("--pvote", `${note / 5 * 100}%`);
+  }
+
+  let listedesacteurs = [];
+  let listeMarqueurs = new Set(); //Ensemble d'éléments uniques
+
+  document.addEventListener('init', function (event) {
+    var page = event.target;
+
+    if (page.id === 'carte') {
+      listeMarqueurs = new Set();
+
+      var map = L.map('map').setView([51.505, -0.09], 13);
+
+      map.addEventListener("moveend", function () {
+        getCarte(map);
+      });
+
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(map);
+
+      map.locate({ setView: true, maxZoom: 10 });
+    }
+    else if (page.id === 'page1') {
+      getPersonnes();
+    } else if (page.id === 'page2') {
+      page.querySelector('ons-toolbar .center').innerHTML = page.data.title;
+      getFilms(page.data.id);
+    } else if (page.id === 'film') {
+      page.querySelector('ons-toolbar .center').innerHTML = page.data.title;
+      getFilm1(page);
+    } else if (page.id === 'ticket') {
+
+      const html5QrCode = new Html5Qrcode(
+        "reader", {
+        formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13]
+      });
+
+      const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+        new QRCode(page.querySelector(".qrcode"), decodedText);
+      };
+
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+      // If you want to prefer front camera
+      html5QrCode.start({
+        facingMode: "user"
+      },
+        config,
+        qrCodeSuccessCallback
+      );
+    }
+  });
+
+  async function getFilm1(page) {
+
+    const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/rest/v1/films?id=eq.${page.data.id}&select=*`,
+    { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' } });
+    const film = await data.json();
+
+    page.querySelector(".titre")
+      .appendChild(document.createTextNode(film.titre));
+
+    page.querySelector(".sortie")
+      .appendChild(document.createTextNode(film.sortie));
+
+    page.querySelector(".duree")
+      .appendChild(document.createTextNode(film.duree));
+
+    loadImage(`films/${film.id}.jpg`, page.querySelector("img"));
+
+    page.data.note_moyenne = film.note_moyenne;
+    page.data.note_nombre = film.note_nombre;
+  }
+
+
+  async function getCarte(map) {
+
+    const b = map.getBounds();
+
+    const data = await fetch("https://morseweiswlpykaugwtd.supabase.co/rest/v1/rpc/etablissements_in_view", {
+      method: "POST",
+      headers: { "content-type" : "application/json",
+        "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30"
+      },
+      body: JSON.stringify({ "min_lat": b._southWest.lat, "min_long": b._southWest.lng, "max_lat": b._northEast.lat, "max_long": b._northEast.lng })
+    });
+
+    const carte = await data.json();
+
+    for (let feature of carte) {
+
+      console.log(feature);
+      if (listeMarqueurs.has(feature.id)) continue;
+
+      var marker = L.marker([feature.lat, feature.long])
+        .addTo(map)
+        .bindPopup(`<strong>${feature.nom}</strong><br>
+        ${feature.nom}`);
+
+      listeMarqueurs.add(feature.id);
+    }
+
+  }
+  async function getPersonnes() {
+    const data = await fetch('https://morseweiswlpykaugwtd.supabase.co/rest/v1/acteur?select=*',
+     { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' } });
+    const personnes = await data.json();
+    listedesacteurs = personnes.filter(p => true);
+    /*
+    listedesacteurs = personnes.filter(p => true)
+      .sort((a, b) => a.nationalite.localeCompare(b.nationalite));
+*/
+    const liste = document.querySelector("#page1 ons-lazy-repeat");
+
+    liste.delegate = {
+      countItems: () => listedesacteurs.length,
+      createItemContent: createLigneActeur
+    }
+  }
+
+  function createLigneActeur(index) {
+
+    const personne = listedesacteurs[index];
+
+    const modele = document.querySelector("#ligne_personne");
+    const fragement = modele.content.cloneNode(true).firstElementChild;
+
+    fragement.querySelector(".nom")
+      .appendChild(document.createTextNode(personne.nom));
+
+    /*fragement.querySelector(".prenom")
+      .appendChild(document.createTextNode(personne.prenom));
+    */
+
+    fragement.querySelector(".nbFilm")
+      .appendChild(document.createTextNode(personne.nb_film));
+
+    loadImage(`https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/personnes/${personne.personne_id}.jpg`,
+      fragement.querySelector(".list-item__thumbnail"));
+
+    const international = new Intl.DateTimeFormat("fr-FR", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      weekday: "long"
+    });
+
+    let naissance = new Date(personne.naissance)
+    let naissanceformat = international.format(naissance);
+
+    fragement.querySelector(".naissance")
+      .appendChild(document.createTextNode(naissanceformat));
+
+    // court-circuit &&
+    personne.deces && fragement.querySelector(".deces")
+      .appendChild(document.createTextNode(
+        international.format(new Date(personne.deces))));
+
+    fragement.addEventListener("click", function (evt) {
+      document.querySelector("#onsenNavigator").pushPage('page2.html', {
+        data: {
+          title: `${personne.prenom} ${personne.nom}`,
+          id: evt.currentTarget.dataset.uuid
+        }
+      });
+    });
+
+    fragement.dataset.uuid = personne.personne_id;
+    //liste.appendChild(fragement);
+    return fragement;
+  }
+
+  // Closure : Les variables de la fonction parente (loadImage)
+  // sont capturées par les fonctions locales onload et onerror
+  function loadImage(source, element) {
+    let photo = new Image;
+    photo.src = source;
+
+    photo.onload = function () {
+      console.log("trouvé");
+      element.setAttribute("src", source);
+    }
+
+    photo.onerror = function () {
+      console.log("absent");
+    }
+  }
+
+  async function getFilms(uuid) {
+    const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/rest/v1/personnes?personne_id=eq.${uuid}&select=*`,
+      { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' } });
+    const personne = await data.json();
+
+    const liste = document.querySelector("#page2 ons-list");
+
+    for (let equipe of personne.Equipe) {
+      const modele = document.querySelector("#ligne_film");
+      const fragement = modele.content.cloneNode(true);
+
+      fragement.querySelector(".titre")
+        .appendChild(document.createTextNode(equipe.film.titre));
+      /*fragement.querySelector(".annee")
+        .appendChild(document.createTextNode(equipe.film.annee));*/
+
+      loadImage(`films/${equipe.film.id}.jpg`,
+        fragement.querySelector("img"));
+
+      fragement.firstElementChild.addEventListener("click", function (evt) {
+        document.querySelector("#onsenNavigator").pushPage('film.html', {
+          data: {
+            title: `${equipe.film.titre}`,
+            id: evt.currentTarget.dataset.uuid
+          }
+        });
+      });
+      fragement.firstElementChild.dataset.uuid = equipe.film.id;
+      liste.appendChild(fragement);
+
+    }
+  }
+</script>
 
 </body>
 
