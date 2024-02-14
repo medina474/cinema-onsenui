@@ -54,6 +54,23 @@
     </ons-list-item>
   </template>
 
+    <template id="ligne_film">
+      <ons-list-item modifier="chevron" tappable>
+        <div class="left">
+          <img src="poster.jpg" width="100">
+        </div>
+        <div class="center">
+          <span class="list-item__title">
+            <span class="titre"></span>
+          </span>
+          <span class="list-item__subtitle">
+            <span class="role"></span>&nbsp;
+            <span class="alias"></span>
+          </span>
+        </div>
+
+      </ons-list-item>
+    </template>
 <script>
 
   async function Voter(note) {
@@ -99,7 +116,7 @@
     }
     else if (page.id === 'page_films') {
       page.querySelector('ons-toolbar .center').innerHTML = page.data.title;
-      getFilms(page.data.id);
+      getFilms(page);
     }
     else if (page.id === '^page_film') {
       page.querySelector('ons-toolbar .center').innerHTML = page.data.title;
@@ -213,31 +230,32 @@
     }
   }
 
-  async function getFilms(uuid) {
+  async function getFilms(page) {
     const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/functions/v1/detail`,
       { method: "POST",
         headers: {
           "content-type": "application/json",
           apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' },
-        body: JSON.stringify({ "personne_id": uuid })
+        body: JSON.stringify({ "personne_id": page.data.id })
       });
 
     const films = await data.json();
 
-    console.log(films);
-
-    const liste = document.querySelector("#page_films ons-list");
+    const liste = page.querySelector("ons-list");
 
     for (let film of films) {
-      const modele = document.querySelector("#ligne_film");
-      const fragement = modele.content.cloneNode(true);
+      const fragement = document.querySelector("#ligne_film").content.cloneNode(true);
 
       fragement.querySelector(".titre")
         .appendChild(document.createTextNode(film.titre));
+
+      fragement.querySelector(".alias")
+        .appendChild(document.createTextNode(film.alias));
+
       /*fragement.querySelector(".annee")
         .appendChild(document.createTextNode(equipe.film.annee));*/
 
-      loadImage(`films/${film.id}.jpg`,
+      loadImage(`https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/films/${film.film_id}.jpg`,
         fragement.querySelector("img"));
 
       fragement.firstElementChild.addEventListener("click", function (evt) {
@@ -248,7 +266,7 @@
           }
         });
       });
-      fragement.firstElementChild.dataset.uuid = equipe.film.id;
+      fragement.firstElementChild.dataset.uuid = film.film_id;
       liste.appendChild(fragement);
     }
   }
