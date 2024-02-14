@@ -4,21 +4,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cinema</title>
+  <title>Cinéma</title>
   <link rel="stylesheet" href="onsenui/css/onsenui.css">
   <link rel="stylesheet" href="onsenui/css/onsen-css-components.min.css">
   <script src="onsenui/js/onsenui.min.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  <link rel="stylesheet" href="leaflet/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  <script src="leaflet/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <style>
+    :root {
+      --notification-font-size: 11px;
+      --notification-background-color: #663399;
+    }
+  </style>
 </head>
 
 <body>
   <ons-navigator swipeable id="onsenNavigator" page="home.html"></ons-navigator>
 
-  <template id="page1.html">
-    <ons-page id="page1">
+  <template id="acteurs.html">
+    <ons-page id="page_acteurs">
       <ons-toolbar>
         <div class="left"><ons-back-button>Home</ons-back-button></div>
         <div class="center">Acteurs</div>
@@ -29,7 +35,7 @@
     </ons-page>
   </template>
 
-  <template id="ligne_personne">
+  <template id="item_acteur">
     <ons-list-item modifier="chevron" tappable>
       <div class="left">
         <img class="list-item__thumbnail" src="_inconnu.jpg">
@@ -45,12 +51,11 @@
           <span class="deces"></span>
         </span>
       </div>
-
     </ons-list-item>
   </template>
 
-    <template id="page2.html">
-      <ons-page id="page2">
+    <template id="fims.html">
+      <ons-page id="page_films">
         <ons-toolbar>
           <div class="left"><ons-back-button>Page 1</ons-back-button></div>
           <div class="center"></div>
@@ -97,7 +102,6 @@
             <use xlink:href="#star" x="300" onclick="Voter(4)" />
             <use xlink:href="#star" x="400" onclick="Voter(5)" />
           </g>
-
         </svg>
 
       </ons-page>
@@ -135,55 +139,26 @@
   }
 
   let listedesacteurs = [];
-  let listeMarqueurs = new Set(); //Ensemble d'éléments uniques
 
   document.addEventListener('init', function (event) {
     var page = event.target;
 
     if (page.id === 'carte') {
-      listeMarqueurs = new Set();
-
-      var map = L.map('map').setView([51.505, -0.09], 13);
-
-      map.addEventListener("moveend", function () {
-        getCarte(map);
-      });
-
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }).addTo(map);
-
-      map.locate({ setView: true, maxZoom: 10 });
+      afficheCarte();
     }
-    else if (page.id === 'page1') {
-      getPersonnes();
-    } else if (page.id === 'page2') {
+    else if (page.id === 'page_acteurs') {
+      getPersonnes(page);
+    }
+    else if (page.id === 'page_films') {
       page.querySelector('ons-toolbar .center').innerHTML = page.data.title;
       getFilms(page.data.id);
-    } else if (page.id === 'film') {
+    }
+    else if (page.id === 'film') {
       page.querySelector('ons-toolbar .center').innerHTML = page.data.title;
       getFilm1(page);
-    } else if (page.id === 'ticket') {
-
-      const html5QrCode = new Html5Qrcode(
-        "reader", {
-        formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13]
-      });
-
-      const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        new QRCode(page.querySelector(".qrcode"), decodedText);
-      };
-
-      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-      // If you want to prefer front camera
-      html5QrCode.start({
-        facingMode: "user"
-      },
-        config,
-        qrCodeSuccessCallback
-      );
+    }
+    else if (page.id === 'ticket') {
+      afficheTicket();
     }
   });
 
@@ -209,35 +184,8 @@
   }
 
 
-  async function getCarte(map) {
 
-    const b = map.getBounds();
-
-    const data = await fetch("https://morseweiswlpykaugwtd.supabase.co/rest/v1/rpc/etablissements_in_view", {
-      method: "POST",
-      headers: { "content-type" : "application/json",
-        "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30"
-      },
-      body: JSON.stringify({ "min_lat": b._southWest.lat, "min_long": b._southWest.lng, "max_lat": b._northEast.lat, "max_long": b._northEast.lng })
-    });
-
-    const carte = await data.json();
-
-    for (let feature of carte) {
-
-      console.log(feature);
-      if (listeMarqueurs.has(feature.id)) continue;
-
-      var marker = L.marker([feature.lat, feature.long])
-        .addTo(map)
-        .bindPopup(`<strong>${feature.nom}</strong><br>
-        ${feature.nom}`);
-
-      listeMarqueurs.add(feature.id);
-    }
-
-  }
-  async function getPersonnes() {
+  async function getPersonnes(page) {
     const data = await fetch('https://morseweiswlpykaugwtd.supabase.co/rest/v1/acteur?select=*',
      { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' } });
     const personnes = await data.json();
@@ -245,20 +193,20 @@
     /*
     listedesacteurs = personnes.filter(p => true)
       .sort((a, b) => a.nationalite.localeCompare(b.nationalite));
-*/
-    const liste = document.querySelector("#page1 ons-lazy-repeat");
+    */
+    const liste = page.querySelector("ons-lazy-repeat");
 
     liste.delegate = {
       countItems: () => listedesacteurs.length,
-      createItemContent: createLigneActeur
+      createItemContent: createItemActeur
     }
   }
 
-  function createLigneActeur(index) {
+  function createItemActeur(index) {
 
     const personne = listedesacteurs[index];
 
-    const modele = document.querySelector("#ligne_personne");
+    const modele = document.querySelector("#item_acteur");
     const fragement = modele.content.cloneNode(true).firstElementChild;
 
     fragement.querySelector(".nom")
@@ -351,11 +299,11 @@
       });
       fragement.firstElementChild.dataset.uuid = equipe.film.id;
       liste.appendChild(fragement);
-
     }
   }
 </script>
-
+<script src="carte.js"></script>
+<script src="ticket.js"></script>
 </body>
 
 </html>
