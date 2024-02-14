@@ -1,6 +1,6 @@
 'use strict';
 
-function afficheticket() {
+function afficheTicket() {
   const html5QrCode = new Html5Qrcode(
     "reader", {
     formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13]

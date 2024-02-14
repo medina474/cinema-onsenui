@@ -1,0 +1,24 @@
+### Tous
+GET https://morseweiswlpykaugwtd.supabase.co/rest/v1/acteur?select=*
+apikey: {{apikey}}
+
+###
+GET https://morseweiswlpykaugwtd.supabase.co/rest/v1/personnes?personne_id=eq.21c2b10a-358e-408b-abd2-5bf391b77927&select=personne_id,equipes(film_id),films(titre)
+apikey: {{apikey}}
+Range: 0-9
+
+### Photo
+GET https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/personnes/03bfee64-d1f4-4df9-92af-cefb41238336.jpg
+
+
+### Carte
+POST https://morseweiswlpykaugwtd.supabase.co/rest/v1/rpc/etablissements_in_view
+apikey: {{apikey}}
+
+{ "min_lat": "46",  "min_long": "6.5",  "max_lat": "7",  "max_long": "7" }
+
+###
+POST https://morseweiswlpykaugwtd.supabase.co/functions/v1/detail
+apikey: {{apikey}}
+
+{ "personne_id": "f3c5dd03-43b7-4fd1-b88f-0a844a96a2be" }

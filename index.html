@@ -54,58 +54,6 @@
     </ons-list-item>
   </template>
 
-    <template id="fims.html">
-      <ons-page id="page_films">
-        <ons-toolbar>
-          <div class="left"><ons-back-button>Page 1</ons-back-button></div>
-          <div class="center"></div>
-        </ons-toolbar>
-        <ons-list>
-        </ons-list>
-      </ons-page>
-    </template>
-
-    <template id="film.html">
-      <ons-page id="film">
-        <ons-toolbar>
-          <div class="left"><ons-back-button>Film</ons-back-button></div>
-          <div class="center"></div>
-        </ons-toolbar>
-
-        <div class="titre"> </div>
-        <div>durée <span class="duree"></span> min</div>
-        <div>sortie <span class="sortie"></span></div>
-        <img src="films/1x1.png" width="300">
-
-        <svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 0 500 100" class="stars">
-          <defs>
-            <symbol id="star">
-              <path d="m50,2 12,34h36l-28,22 10,34-30-20-30,20 10-34-28-22h36z" />
-            </symbol>
-            <style>
-              .decoupe {
-                clip-path: polygon(0 0, var(--pvote) 0, var(--pvote) 100%, 0 100%);
-              }
-            </style>
-          </defs>
-          <g>
-            <use xlink:href="#star" x="0" onclick="Voter(1)" />
-            <use xlink:href="#star" x="100" onclick="Voter(2)" />
-            <use xlink:href="#star" x="200" onclick="Voter(3)" />
-            <use xlink:href="#star" x="300" onclick="Voter(4)" />
-            <use xlink:href="#star" x="400" onclick="Voter(5)" />
-          </g>
-          <g fill="gold" class="decoupe">
-            <use xlink:href="#star" x="0" onclick="Voter(1)" />
-            <use xlink:href="#star" x="100" onclick="Voter(2)" />
-            <use xlink:href="#star" x="200" onclick="Voter(3)" />
-            <use xlink:href="#star" x="300" onclick="Voter(4)" />
-            <use xlink:href="#star" x="400" onclick="Voter(5)" />
-          </g>
-        </svg>
-
-      </ons-page>
-    </template>
 <script>
 
   async function Voter(note) {
@@ -153,7 +101,7 @@
       page.querySelector('ons-toolbar .center').innerHTML = page.data.title;
       getFilms(page.data.id);
     }
-    else if (page.id === 'film') {
+    else if (page.id === '^page_film') {
       page.querySelector('ons-toolbar .center').innerHTML = page.data.title;
       getFilm1(page);
     }
@@ -162,7 +110,7 @@
     }
   });
 
-  async function getFilm1(page) {
+  async function getFilm(page) {
 
     const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/rest/v1/films?id=eq.${page.data.id}&select=*`,
     { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' } });
@@ -212,10 +160,6 @@
     fragement.querySelector(".nom")
       .appendChild(document.createTextNode(personne.nom));
 
-    /*fragement.querySelector(".prenom")
-      .appendChild(document.createTextNode(personne.prenom));
-    */
-
     fragement.querySelector(".nbFilm")
       .appendChild(document.createTextNode(personne.nb_film));
 
@@ -241,7 +185,7 @@
         international.format(new Date(personne.deces))));
 
     fragement.addEventListener("click", function (evt) {
-      document.querySelector("#onsenNavigator").pushPage('page2.html', {
+      document.querySelector("#onsenNavigator").pushPage('films.html', {
         data: {
           title: `${personne.prenom} ${personne.nom}`,
           id: evt.currentTarget.dataset.uuid
@@ -261,38 +205,45 @@
     photo.src = source;
 
     photo.onload = function () {
-      console.log("trouvé");
       element.setAttribute("src", source);
     }
 
     photo.onerror = function () {
-      console.log("absent");
+      /*console.log("absent");*/
     }
   }
 
   async function getFilms(uuid) {
-    const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/rest/v1/personnes?personne_id=eq.${uuid}&select=*`,
-      { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' } });
-    const personne = await data.json();
+    const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/functions/v1/detail`,
+      { method: "POST",
+        headers: {
+          "content-type": "application/json",
+          apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' },
+        body: JSON.stringify({ "personne_id": uuid })
+      });
 
-    const liste = document.querySelector("#page2 ons-list");
+    const films = await data.json();
 
-    for (let equipe of personne.Equipe) {
+    console.log(films);
+
+    const liste = document.querySelector("#page_films ons-list");
+
+    for (let film of films) {
       const modele = document.querySelector("#ligne_film");
       const fragement = modele.content.cloneNode(true);
 
       fragement.querySelector(".titre")
-        .appendChild(document.createTextNode(equipe.film.titre));
+        .appendChild(document.createTextNode(film.titre));
       /*fragement.querySelector(".annee")
         .appendChild(document.createTextNode(equipe.film.annee));*/
 
-      loadImage(`films/${equipe.film.id}.jpg`,
+      loadImage(`films/${film.id}.jpg`,
         fragement.querySelector("img"));
 
       fragement.firstElementChild.addEventListener("click", function (evt) {
         document.querySelector("#onsenNavigator").pushPage('film.html', {
           data: {
-            title: `${equipe.film.titre}`,
+            title: `${film.titre}`,
             id: evt.currentTarget.dataset.uuid
           }
         });
