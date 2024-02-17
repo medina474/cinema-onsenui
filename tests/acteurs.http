@@ -1,5 +1,5 @@
 ### Tous
-GET https://morseweiswlpykaugwtd.supabase.co/rest/v1/acteur?select=*
+GET https://morseweiswlpykaugwtd.supabase.co/rest/v1/acteurs?select=*
 apikey: {{apikey}}
 
 ###

@@ -56,7 +56,7 @@
 
     <template id="ligne_film">
       <ons-list-item modifier="chevron" tappable>
-        <div class="left">
+        <div class="left" style="width:100px">
           <img src="poster.jpg" width="100">
         </div>
         <div class="center">
@@ -64,7 +64,6 @@
             <span class="titre"></span>
           </span>
           <span class="list-item__subtitle">
-            <span class="role"></span>&nbsp;
             <span class="alias"></span>
           </span>
         </div>
@@ -151,7 +150,7 @@
 
 
   async function getPersonnes(page) {
-    const data = await fetch('https://morseweiswlpykaugwtd.supabase.co/rest/v1/acteur?select=*',
+    const data = await fetch('https://morseweiswlpykaugwtd.supabase.co/rest/v1/acteurs?select=*',
      { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' } });
     const personnes = await data.json();
     listedesacteurs = personnes.filter(p => true);
@@ -204,7 +203,7 @@
     fragement.addEventListener("click", function (evt) {
       document.querySelector("#onsenNavigator").pushPage('films.html', {
         data: {
-          title: `${personne.prenom} ${personne.nom}`,
+          title: `${personne.nom}`,
           id: evt.currentTarget.dataset.uuid
         }
       });
