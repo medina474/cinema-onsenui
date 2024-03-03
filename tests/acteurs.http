@@ -16,9 +16,3 @@ POST https://morseweiswlpykaugwtd.supabase.co/rest/v1/rpc/etablissements_in_view
 apikey: {{apikey}}
 
 { "min_lat": "46",  "min_long": "6.5",  "max_lat": "7",  "max_long": "7" }
-
-###
-POST https://morseweiswlpykaugwtd.supabase.co/functions/v1/detail
-apikey: {{apikey}}
-
-{ "personne_id": "f3c5dd03-43b7-4fd1-b88f-0a844a96a2be" }

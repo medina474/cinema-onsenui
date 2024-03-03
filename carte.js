@@ -1,7 +1,7 @@
 'use strict';
 
 let listeMarqueurs = new Set(); //Ensemble d'éléments uniques
-
+const clusters = L.markerClusterGroup();
 function afficheCarte() {
   listeMarqueurs = new Set();
 
@@ -15,6 +15,8 @@ function afficheCarte() {
     maxZoom: 17,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
+
+  map.addLayer(clusters);
 
   map.locate({ setView: true, maxZoom: 15 });
 }
@@ -32,18 +34,17 @@ async function getCinemas(map) {
     body: JSON.stringify({ "min_lat": b._southWest.lat, "min_long": b._southWest.lng, "max_lat": b._northEast.lat, "max_long": b._northEast.lng })
   });
 
-  const carte = await data.json();
+  //console.log(data.headers.get("content-type"))
+  const etablissements = await data.json();
 
-  for (let feature of carte) {
+  for (let e of etablissements) {
 
-    console.log(feature);
-    if (listeMarqueurs.has(feature.id)) continue;
+    if (listeMarqueurs.has(e.etablissement_id)) continue;
 
-    var marker = L.marker([feature.lat, feature.long])
-      .addTo(map)
-      .bindPopup(`<strong>${feature.nom}</strong><br>
-        ${feature.nom}`);
+    clusters.addLayer(L.marker([e.lat, e.long])
+      .bindPopup(`<strong>${e.nom}</strong><br>
+        ${e.ville}`));
 
-    listeMarqueurs.add(feature.id);
+    listeMarqueurs.add(e.etablissement_id);
   }
 }

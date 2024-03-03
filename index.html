@@ -12,10 +12,28 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="leaflet/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link rel="stylesheet" href="cluster/MarkerCluster.css">
+  <link rel="stylesheet" href="cluster/MarkerCluster.Default.css">
+  <script src="cluster/leaflet.markercluster.js"></script>
   <style>
     :root {
       --notification-font-size: 11px;
       --notification-background-color: #663399;
+    }
+    .hidden {
+      display: none;
+    }
+    #page_films .film {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-row: 1fr;
+    }
+    #page_films .titre {
+      font-weight: 600;
+    }
+    #page_films .alias {
+      opacity: .75;
+      font-size: var(--font-size--mini);
     }
   </style>
 </head>
@@ -26,8 +44,12 @@
   <template id="acteurs.html">
     <ons-page id="page_acteurs">
       <ons-toolbar>
-        <div class="left"><ons-back-button>Home</ons-back-button></div>
-        <div class="center">Acteurs</div>
+        <div class="left"><ons-back-button></ons-back-button></div>
+        <div class="center"><span class="titre">Acteurs</span>
+          <input type="search" value="" placeholder="Search" class="search-input search-input--material hidden" style="width: 280px;"
+            onkeyup="searchActeurs(event)">
+        </div>
+        <div class="right"><ons-icon icon="fa-search" onclick="document.querySelector('.center .search-input').classList.toggle('hidden');document.querySelector('.center .titre').classList.toggle('hidden');" /></div>
       </ons-toolbar>
       <ons-list>
         <ons-lazy-repeat></ons-lazy-repeat>
@@ -42,11 +64,11 @@
       </div>
       <div class="center">
         <span class="list-item__title">
-          <span class="prenom"></span>&nbsp;
           <strong class="nom"></strong>
           <span class="nbFilm notification"></span>
         </span>
         <span class="list-item__subtitle">
+          <span class="pays"></span>
           <span class="naissance"></span>&nbsp;
           <span class="deces"></span>
         </span>
@@ -56,33 +78,43 @@
 
     <template id="ligne_film">
       <ons-list-item modifier="chevron" tappable>
-        <div class="left" style="width:100px">
-          <img src="poster.jpg" width="100">
+        <div class="film" style="align-items: flex-start">
+          <div style="width:100px; padding-inline-end: 1em;">
+            <img src="poster.jpg" width="100">
+          </div>
+          <div>
+            <div class="titre"></div>
+            <div class="alias"></div>
+            <div class="info"></div>
+            <div class="cast"></div>
+          </div>
         </div>
-        <div class="center">
-          <span class="list-item__title">
-            <span class="titre"></span>
-          </span>
-          <span class="list-item__subtitle">
-            <span class="alias"></span>
-          </span>
-        </div>
-
       </ons-list-item>
+    </template>
+
+    <template id="vignette_acteur">
+      <div class="acteur">
+        <div><img src="_inconnu.jpg"></div>
+        <div><span class="nom"></span><br><span class="alias"></span></div>
+      </div>
+    </template>
+
+    <template id="vignette_equipe">
+      <div><span class="nom"></span><br><span class="role"></span></div>
     </template>
 <script>
 
   async function Voter(note) {
 
     // onsenNavigator.topPage = page courante
-    let moyenne = onsenNavigator.topPage.data.note_moyenne ?? 0; // null -> 0
-    let nombre = onsenNavigator.topPage.data.note_nombre ?? 0;
+    let moyenne = onsenNavigator.topPage.data.vote_moyenne ?? 0; // null -> 0
+    let nombre = onsenNavigator.topPage.data.vote_votants ?? 0;
     let nouvelle_moyenne = ((moyenne * nombre) + note) / (nombre + 1);
     nombre = nombre + 1;
 
     const body = {
-      "note_moyenne": nouvelle_moyenne,
-      "note_nombre": nombre
+      "vote_moyenne": nouvelle_moyenne,
+      "vote_votants": nombre
     }
 
     const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/rest/v1/films?id=eq.${onsenNavigator.topPage.data.id}&select=*`,
@@ -93,16 +125,16 @@
 
     colorier(onsenNavigator.topPage, nouvelle_moyenne)
 
-    onsenNavigator.topPage.data.note_moyenne = nouvelle_moyenne;
-    onsenNavigator.topPage.data.note_nombre = nombre;
+    onsenNavigator.topPage.data.vote_moyenne = nouvelle_moyenne;
+    onsenNavigator.topPage.data.vote_votants = nombre;
   }
 
   function colorier(page, note) {
     page.querySelector("svg.stars")
-      .style.setProperty("--pvote", `${note / 5 * 100}%`);
+      .style.setProperty("--pvote", `${note / 10 * 100}%`);
   }
 
-  let listedesacteurs = [];
+
 
   document.addEventListener('init', function (event) {
     var page = event.target;
@@ -117,102 +149,16 @@
       page.querySelector('ons-toolbar .center').innerHTML = page.data.title;
       getFilms(page);
     }
-    else if (page.id === '^page_film') {
+    else if (page.id === 'page_film') {
       page.querySelector('ons-toolbar .center').innerHTML = page.data.title;
-      getFilm1(page);
+      getFilm(page);
     }
     else if (page.id === 'ticket') {
       afficheTicket();
     }
   });
 
-  async function getFilm(page) {
 
-    const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/rest/v1/films?id=eq.${page.data.id}&select=*`,
-    { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' } });
-    const film = await data.json();
-
-    page.querySelector(".titre")
-      .appendChild(document.createTextNode(film.titre));
-
-    page.querySelector(".sortie")
-      .appendChild(document.createTextNode(film.sortie));
-
-    page.querySelector(".duree")
-      .appendChild(document.createTextNode(film.duree));
-
-    loadImage(`films/${film.id}.jpg`, page.querySelector("img"));
-
-    page.data.note_moyenne = film.note_moyenne;
-    page.data.note_nombre = film.note_nombre;
-  }
-
-
-
-  async function getPersonnes(page) {
-    const data = await fetch('https://morseweiswlpykaugwtd.supabase.co/rest/v1/acteurs?select=*',
-     { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' } });
-    const personnes = await data.json();
-    listedesacteurs = personnes.filter(p => true);
-    /*
-    listedesacteurs = personnes.filter(p => true)
-      .sort((a, b) => a.nationalite.localeCompare(b.nationalite));
-    */
-    const liste = page.querySelector("ons-lazy-repeat");
-
-    liste.delegate = {
-      countItems: () => listedesacteurs.length,
-      createItemContent: createItemActeur
-    }
-  }
-
-  function createItemActeur(index) {
-
-    const personne = listedesacteurs[index];
-
-    const modele = document.querySelector("#item_acteur");
-    const fragement = modele.content.cloneNode(true).firstElementChild;
-
-    fragement.querySelector(".nom")
-      .appendChild(document.createTextNode(personne.nom));
-
-    fragement.querySelector(".nbFilm")
-      .appendChild(document.createTextNode(personne.nb_film));
-
-    loadImage(`https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/personnes/${personne.personne_id}.jpg`,
-      fragement.querySelector(".list-item__thumbnail"));
-
-    const international = new Intl.DateTimeFormat("fr-FR", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      weekday: "long"
-    });
-
-    let naissance = new Date(personne.naissance)
-    let naissanceformat = international.format(naissance);
-
-    fragement.querySelector(".naissance")
-      .appendChild(document.createTextNode(naissanceformat));
-
-    // court-circuit &&
-    personne.deces && fragement.querySelector(".deces")
-      .appendChild(document.createTextNode(
-        international.format(new Date(personne.deces))));
-
-    fragement.addEventListener("click", function (evt) {
-      document.querySelector("#onsenNavigator").pushPage('films.html', {
-        data: {
-          title: `${personne.nom}`,
-          id: evt.currentTarget.dataset.uuid
-        }
-      });
-    });
-
-    fragement.dataset.uuid = personne.personne_id;
-    //liste.appendChild(fragement);
-    return fragement;
-  }
 
   // Closure : Les variables de la fonction parente (loadImage)
   // sont capturées par les fonctions locales onload et onerror
@@ -233,9 +179,9 @@
     const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/functions/v1/detail`,
       { method: "POST",
         headers: {
-          "content-type": "application/json",
-          apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' },
-        body: JSON.stringify({ "personne_id": page.data.id })
+            "content-type": "application/json",
+            apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' },
+          body: JSON.stringify({ "personne_id": page.data.id })
       });
 
     const films = await data.json();
@@ -251,6 +197,13 @@
       fragement.querySelector(".alias")
         .appendChild(document.createTextNode(film.alias));
 
+      if (film.annee) {
+        fragement.querySelector(".info")
+          .appendChild(document.createTextNode(film.annee));
+      }
+
+      fragement.querySelector(".cast")
+        .appendChild(document.createTextNode(film.genres));
       /*fragement.querySelector(".annee")
         .appendChild(document.createTextNode(equipe.film.annee));*/
 
@@ -258,7 +211,7 @@
         fragement.querySelector("img"));
 
       fragement.firstElementChild.addEventListener("click", function (evt) {
-        document.querySelector("#onsenNavigator").pushPage('film.html', {
+        onsenNavigator.pushPage('film.html', {
           data: {
             title: `${film.titre}`,
             id: evt.currentTarget.dataset.uuid
@@ -270,8 +223,11 @@
     }
   }
 </script>
+<script src="acteurs.js"></script>
 <script src="carte.js"></script>
 <script src="ticket.js"></script>
+<script src="metaphone.js"></script>
+<script src="film.js"></script>
 </body>
 
 </html>
