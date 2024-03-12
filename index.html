@@ -23,16 +23,30 @@
     .hidden {
       display: none;
     }
+
     #page_films .film {
       display: grid;
       grid-template-columns: auto 1fr;
       grid-row: 1fr;
     }
+
     #page_films .titre {
       font-weight: 600;
     }
+
     #page_films .alias {
       opacity: .75;
+      font-size: var(--font-size--mini);
+    }
+
+    #page_films .resume {
+      margin-top: 0.5em;
+      font-size: var(--font-size--mini);
+      max-height: 4em;
+      overflow: hidden;
+    }
+
+    #page_films .genres {
       font-size: var(--font-size--mini);
     }
   </style>
@@ -83,10 +97,11 @@
             <img src="poster.jpg" width="100">
           </div>
           <div>
-            <div class="titre"></div>
+            <div><span class="titre"></span> <span class="annee"></span></div>
             <div class="alias"></div>
             <div class="info"></div>
-            <div class="cast"></div>
+            <div><span class="genres"></span> | <span class="duree"></span></div>
+            <div class="resume"></div>
           </div>
         </div>
       </ons-list-item>
@@ -198,12 +213,18 @@
         .appendChild(document.createTextNode(film.alias));
 
       if (film.annee) {
-        fragement.querySelector(".info")
-          .appendChild(document.createTextNode(film.annee));
+        fragement.querySelector(".annee")
+          .appendChild(document.createTextNode("(" + film.annee + ")"));
       }
 
-      fragement.querySelector(".cast")
+      fragement.querySelector(".genres")
         .appendChild(document.createTextNode(film.genres));
+
+      fragement.querySelector(".duree")
+        .appendChild(document.createTextNode(getDuree(film.duree)));
+
+        fragement.querySelector(".resume")
+        .appendChild(document.createTextNode(film.resume));
       /*fragement.querySelector(".annee")
         .appendChild(document.createTextNode(equipe.film.annee));*/
 

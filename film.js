@@ -1,3 +1,22 @@
+function getDuree(duree) {
+  let heures = Math.floor(duree / 60);
+  var minutes = duree % 60;
+
+  let str = '';
+  if (minutes) {
+    str = `${minutes}`
+  }
+
+  if (heures) {
+    str = `${heures}h` + str
+  }
+  else {
+    str += 'm'
+  }
+
+  return str
+}
+
 async function getFilm(page) {
 
   const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/functions/v1/film`,
@@ -40,20 +59,8 @@ async function getFilm(page) {
   page.querySelector(".sortie")
     .appendChild(document.createTextNode(international.format(new Date(film.sortie))));
 
-  let heures = Math.floor(film.duree / 60);
-  var minutes = film.duree % 60;
-
-  let duree = '';
-  if (minutes) {
-    duree = `${minutes}m`
-  }
-
-  if (heures) {
-    duree = `${heures}h ` + duree
-  }
-
   page.querySelector(".duree")
-    .appendChild(document.createTextNode(duree));
+    .appendChild(document.createTextNode(getDuree(film.duree)));
 
   page.querySelector(".genres")
     .appendChild(document.createTextNode(film.genres.join(', ')));
