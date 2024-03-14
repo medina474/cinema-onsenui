@@ -49,6 +49,10 @@ async function getFilm(page) {
       .appendChild(document.createTextNode(film.resume));
   }
 
+  if (film.franchise) {
+    page.querySelector(".franchise")
+      .appendChild(document.createTextNode(film.resume));
+  }
 
   const international = new Intl.DateTimeFormat("fr-FR", {
     year: "numeric",
