@@ -51,7 +51,12 @@ async function getFilm(page) {
 
   if (film.franchise) {
     page.querySelector(".franchise")
-      .appendChild(document.createTextNode(film.resume));
+      .appendChild(document.createTextNode(film.franchise));
+  }
+
+  if (film.motscles) {
+    page.querySelector(".motscles")
+      .appendChild(document.createTextNode(film.motscles.map(elt => elt.motcle).join(', ')));
   }
 
   const international = new Intl.DateTimeFormat("fr-FR", {
