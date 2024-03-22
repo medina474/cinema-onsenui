@@ -42,8 +42,13 @@
     #page_films .resume {
       margin-top: 0.5em;
       font-size: var(--font-size--mini);
-      max-height: 4em;
+      /*max-height: 4em;
+      */
       overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      text-overflow: ellipsis;
     }
 
     #page_films .genres {
