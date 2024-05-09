@@ -15,6 +15,8 @@
   <link rel="stylesheet" href="cluster/MarkerCluster.css">
   <link rel="stylesheet" href="cluster/MarkerCluster.Default.css">
   <script src="cluster/leaflet.markercluster.js"></script>
+  <link rel="manifest" href="manifest.json" /> 
+  <meta name="#663399">
   <style>
     :root {
       --notification-font-size: 11px;
@@ -54,7 +56,8 @@
     #page_films .genres {
       font-size: var(--font-size--mini);
     }
-  </style>
+ </style>
+ <script>navigator.serviceWorker.register("service-worker.js")</script> 
 </head>
 
 <body>
