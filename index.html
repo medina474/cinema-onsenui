@@ -98,22 +98,7 @@
     </ons-list-item>
   </template>
 
-    <template id="ligne_film">
-      <ons-list-item modifier="chevron" tappable>
-        <div class="film" style="align-items: flex-start">
-          <div style="width:100px; padding-inline-end: 1em;">
-            <img src="poster.jpg" width="100">
-          </div>
-          <div>
-            <div><span class="titre"></span> <span class="annee"></span></div>
-            <div class="alias"></div>
-            <div class="info"></div>
-            <div><span class="genres"></span> | <span class="duree"></span></div>
-            <div class="resume"></div>
-          </div>
-        </div>
-      </ons-list-item>
-    </template>
+    
 
     <template id="vignette_acteur">
       <div class="acteur">
@@ -197,65 +182,12 @@
       /*console.log("absent");*/
     }
   }
-
-  async function getFilms(page) {
-    const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/functions/v1/detail`,
-      { method: "POST",
-        headers: {
-            "content-type": "application/json",
-            apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' },
-          body: JSON.stringify({ "personne_id": page.data.id })
-      });
-
-    const films = await data.json();
-
-    const liste = page.querySelector("ons-list");
-
-    for (let film of films) {
-      const fragement = document.querySelector("#ligne_film").content.cloneNode(true);
-
-      fragement.querySelector(".titre")
-        .appendChild(document.createTextNode(film.titre));
-
-      fragement.querySelector(".alias")
-        .appendChild(document.createTextNode(film.alias));
-
-      if (film.annee) {
-        fragement.querySelector(".annee")
-          .appendChild(document.createTextNode("(" + film.annee + ")"));
-      }
-
-      fragement.querySelector(".genres")
-        .appendChild(document.createTextNode(film.genres));
-
-      fragement.querySelector(".duree")
-        .appendChild(document.createTextNode(getDuree(film.duree)));
-
-        fragement.querySelector(".resume")
-        .appendChild(document.createTextNode(film.resume));
-      /*fragement.querySelector(".annee")
-        .appendChild(document.createTextNode(equipe.film.annee));*/
-
-      loadImage(`https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/films/${film.film_id}.jpg`,
-        fragement.querySelector("img"));
-
-      fragement.firstElementChild.addEventListener("click", function (evt) {
-        onsenNavigator.pushPage('film.html', {
-          data: {
-            title: `${film.titre}`,
-            id: evt.currentTarget.dataset.uuid
-          }
-        });
-      });
-      fragement.firstElementChild.dataset.uuid = film.film_id;
-      liste.appendChild(fragement);
-    }
-  }
 </script>
 <script src="acteurs.js"></script>
 <script src="carte.js"></script>
 <script src="ticket.js"></script>
 <script src="metaphone.js"></script>
+<script src="films.js"></script>
 <script src="film.js"></script>
 </body>
 

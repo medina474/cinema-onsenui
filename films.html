@@ -5,4 +5,22 @@
   </ons-toolbar>
   <ons-list>
   </ons-list>
+
+  <template id="ligne_film">
+    <ons-list-item modifier="chevron" tappable>
+      <div class="film" style="align-items: flex-start">
+        <div style="width:100px; padding-inline-end: 1em;">
+          <img src="poster.jpg" loading="lazy" width="100">
+        </div>
+        <div>
+          <div><span class="titre"></span> <span class="annee"></span></div>
+          <div class="alias"></div>
+          <div class="info"></div>
+          <div><span class="genres"></span> | <span class="duree"></span></div>
+          <div class="resume"></div>
+        </div>
+      </div>
+    </ons-list-item>
+  </template>
+  
 </ons-page>
