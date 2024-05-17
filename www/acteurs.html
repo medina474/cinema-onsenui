@@ -1,0 +1,34 @@
+<ons-page id="page_acteurs">
+  <ons-toolbar>
+    <div class="left"><ons-back-button></ons-back-button></div>
+    <div class="center"><span class="titre">Acteurs</span>
+      <input type="search" value="" placeholder="Search" class="search-input search-input--material hidden"
+        style="width: 280px;" onkeyup="searchActeurs(event)">
+    </div>
+    <div class="right"><ons-icon icon="fa-search"
+        onclick="document.querySelector('.center .search-input').classList.toggle('hidden');document.querySelector('.center .titre').classList.toggle('hidden');" />
+    </div>
+  </ons-toolbar>
+  <ons-list>
+    <ons-lazy-repeat></ons-lazy-repeat>
+  </ons-list>
+
+  <template id="item_acteur">
+    <ons-list-item modifier="chevron" tappable>
+      <div class="left">
+        <img class="list-item__thumbnail" loading="lazy" src="_inconnu.jpg" onerror="this.src='_inconnu.jpg'">
+      </div>
+      <div class="center">
+        <span class="list-item__title">
+          <strong class="nom"></strong>
+          <span class="nbFilm notification"></span>
+        </span>
+        <span class="list-item__subtitle">
+          <span class="pays"></span>
+          <span class="naissance"></span>&nbsp;
+          <span class="deces"></span>
+        </span>
+      </div>
+    </ons-list-item>
+  </template>
+</ons-page>

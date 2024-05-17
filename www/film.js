@@ -1,3 +1,5 @@
+'use strict';
+
 function getDuree(duree) {
   let heures = Math.floor(duree / 60);
   var minutes = duree % 60;

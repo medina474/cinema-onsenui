@@ -1,3 +1,5 @@
+'use strict';
+
 async function getFilms(page) {
   const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/functions/v1/detail`,
     { method: "POST",
