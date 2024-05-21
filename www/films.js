@@ -14,38 +14,38 @@ async function getFilms(page) {
   const liste = page.querySelector("ons-list");
 
   for (let film of films) {
-    const fragement = page.querySelector("template").content.cloneNode(true);
+    const fragment = page.querySelector("template").content.cloneNode(true);
 
-    fragement.querySelector(".titre")
+    fragment.querySelector(".titre")
       .appendChild(document.createTextNode(film.titre));
 
-    fragement.querySelector(".alias")
+    fragment.querySelector(".alias")
       .appendChild(document.createTextNode(film.alias));
 
     if (film.annee) {
-      fragement.querySelector(".annee")
+      fragment.querySelector(".annee")
         .appendChild(document.createTextNode("(" + film.annee + ")"));
     }
 
-    fragement.querySelector(".genres")
+    fragment.querySelector(".genres")
       .appendChild(document.createTextNode(film.genres));
 
-    fragement.querySelector(".duree")
+    fragment.querySelector(".duree")
       .appendChild(document.createTextNode(getDuree(film.duree)));
 
-      fragement.querySelector(".resume")
+      fragment.querySelector(".resume")
       .appendChild(document.createTextNode(film.resume));
-    /*fragement.querySelector(".annee")
+    /*fragment.querySelector(".annee")
       .appendChild(document.createTextNode(equipe.film.annee));*/
 
-      /*
+    /*
     loadImage(`https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/films/${film.film_id}.jpg`,
-      fragement.querySelector("img"));
-*/
+      fragment.querySelector("img"));
+    */
 
-fragement.querySelector("img").src = `https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/films/${film.film_id}.jpg`;
+    fragment.querySelector("img").src = `https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/films/${film.film_id}.jpg`;
 
-    fragement.firstElementChild.addEventListener("click", function (evt) {
+    fragment.firstElementChild.addEventListener("click", function (evt) {
       onsenNavigator.pushPage('film.html', {
         data: {
           title: `${film.titre}`,
@@ -53,7 +53,7 @@ fragement.querySelector("img").src = `https://morseweiswlpykaugwtd.supabase.co/s
         }
       });
     });
-    fragement.firstElementChild.dataset.uuid = film.film_id;
-    liste.appendChild(fragement);
+    fragment.firstElementChild.dataset.uuid = film.film_id;
+    liste.appendChild(fragment);
   }
 }

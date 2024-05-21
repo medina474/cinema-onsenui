@@ -118,16 +118,15 @@
   });
 
 
-
   // Closure : Les variables de la fonction parente (loadImage)
   // sont capturées par les fonctions locales onload et onerror
   function loadImage(source, element) {
-    //let photo = new Image;
-    //photo.src = source;
+    let photo = new Image;
+    photo.src = source;
 
-    //photo.onload = function () {
+    photo.onload = function () {
       element.setAttribute("src", source);
-   // }
+    }
 
     //photo.onerror = function () {
       /*console.log("absent");*/
