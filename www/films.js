@@ -1,12 +1,22 @@
 'use strict';
 
 async function getFilms(page) {
+  /*
   const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/functions/v1/detail`,
     { method: "POST",
       headers: {
           "content-type": "application/json",
           apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' },
         body: JSON.stringify({ "personne_id": page.data.id })
+    });
+  */
+
+  const data = await fetch(`https://morseweiswlpykaugwtd.supabase.co/rest/v1/rpc/films_par_acteur`,
+    { method: "POST",
+      headers: {
+          "content-type": "application/json",
+          apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcnNld2Vpc3dscHlrYXVnd3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY5NTcxMjgsImV4cCI6MjAyMjUzMzEyOH0.UV5XCINWe-Jaw6_-787Veh-LxjzUVudArvrgH6Ycf30' },
+        body: JSON.stringify({ "id": page.data.id })
     });
 
   const films = await data.json();
@@ -33,8 +43,27 @@ async function getFilms(page) {
     fragment.querySelector(".duree")
       .appendChild(document.createTextNode(getDuree(film.duree)));
 
-      fragment.querySelector(".resume")
+    fragment.querySelector(".resume")
       .appendChild(document.createTextNode(film.resume));
+
+    if (film.franchise) {
+      const a = document.createElement("a")
+      a.setAttribute("src", film.franchise)
+      a.appendChild(document.createTextNode(film.franchise))
+      a.addEventListener("click", function (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        onsenNavigator.pushPage('franchise.html', {
+          data: {
+            title: `${film.titre}`,
+            id: evt.currentTarget.dataset.uuid
+          }
+        });
+      });
+      fragment.querySelector(".franchise")
+        .appendChild(a);
+    }
+
     /*fragment.querySelector(".annee")
       .appendChild(document.createTextNode(equipe.film.annee));*/
 

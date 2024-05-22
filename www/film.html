@@ -1,8 +1,13 @@
 <ons-page id="page_film">
   <style>
+    #page_film .page__content {
+      background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgba(0, 0, 0, 0) 100%), url(../../4kix6fAblJIH6eMs0Ku2loyZJXK.jpg) no-repeat center top
+    }
+
     #page_film .titre {
       font-size: calc(.7em + 3vw);
       text-align: center;
+      margin-top: 0;
     }
 
     #page_film .annee {
@@ -18,7 +23,7 @@
     #page_film h3.slogan {
       margin-bottom: 0;
       font-size: 1.1em;
-      font-weight: 400;
+      font-weight: 4linear-gradient(0deg, rgb(255, 255, 255) 0%, rgba(0, 0, 0, 0) 100%), url(4kix6fAblJIH6eMs0Ku2loyZJXK.jpg) no-repeat center top00;
       font-style: italic;
       opacity: .7;
     }
@@ -26,13 +31,12 @@
     #page_film .info2 {
       text-align: center;
       font-size: 0.88em;
-      width: 100%;
-      background-color: rgba(0,0,0,.1);
-      border-top: 1px solid rgba(0,0,0,.2);
-      border-bottom: 1px solid rgba(0,0,0,.2);
+      background-color: rgba(255,255,255,1);
       padding: 10px;
       z-index: 0;
       box-sizing: border-box;
+      border-radius: 5px;
+      margin: 0 1em;
     }
 
     #page_film .duree::before {
@@ -53,14 +57,21 @@
     }
 
     #page_film .acteur {
-      box-shadow: 3px 3px 6px 2px lightgrey;
-      background: white;
       padding: 2px;
-      width: 120px;
+      width: 100px;
+    }
+
+    #page_film .resume {
+      font-size: 90%;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      display: -webkit-box;
+      overflow: hidden;
     }
 
     #page_film .acteurs img {
-      width:120px;
+      width:80px;
+      border-radius: 50%;
     }
 
      #page_film .acteurs .nom {
@@ -80,6 +91,11 @@
       text-align: center;
     }
 
+    #page_film .motscles {
+      font-size: 90%;
+      padding:0 1em;
+    }
+
     #page_film .poster img {
       width: 100%;
     }
@@ -89,7 +105,7 @@
     <div class="center"></div>
   </ons-toolbar>
 
-  <h2 class="titre"><span></span> <span class="annee"></span></h2>
+ 
 
 <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 500 100" class="stars">
   <defs>
@@ -119,29 +135,34 @@
 </svg>
 
   <div class="info2">
+    <h2 class="titre"><span></span> <span class="annee"></span></h2>
     <div><span class="sortie"></span><span class="duree"></span></div>
+    <div><span class="director"></span></div>
     <div class="genres"></div>
+    <button>trailer</button>
   </div>
 
   <div class="info">
     <h3 class="slogan"></h3>
-    <div class="resume"></div>
+    <p class="resume"></p>
     <div class="equipe">
 
     </div>
     <div class="franchise"></div>
+    <div class="societes"></div>
 
   </div>
 
   <div class="acteurs">
 
   </div>
+  
+  <div class="motscles"></div>
 
   <div class="poster">
     <img src="poster.jpg">
   </div>
 
-  <div class="motscles"></div>
 
   <template id="vignette_acteur">
     <div class="acteur">

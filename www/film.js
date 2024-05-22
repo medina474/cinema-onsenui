@@ -56,6 +56,11 @@ async function getFilm(page) {
       .appendChild(document.createTextNode(film.franchise));
   }
 
+  if (film.societes) {
+    page.querySelector(".societes")
+      .appendChild(document.createTextNode(film.societes.map(elt => elt.societe).join(', ')));
+  }
+
   if (film.motscles) {
     page.querySelector(".motscles")
       .appendChild(document.createTextNode(film.motscles.map(elt => elt.motcle).join(', ')));

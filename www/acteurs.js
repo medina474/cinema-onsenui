@@ -43,22 +43,22 @@ function createItemActeur(index) {
   const personne = listefiltree[index];
 
   const modele = document.querySelector("#item_acteur");
-  const fragement = modele.content.cloneNode(true).firstElementChild;
+  const fragment = modele.content.cloneNode(true).firstElementChild;
 
-  fragement.querySelector(".nom")
+  fragment.querySelector(".nom")
     .appendChild(document.createTextNode(personne.nom));
 
-  fragement.querySelector(".nbFilm")
+  fragment.querySelector(".nbFilm")
     .appendChild(document.createTextNode(personne.nb_film));
 
   if (personne.drapeau_unicode) {
     let p = document.createElement("img");
     p.src = `flags/${personne.drapeau_unicode}.png`
-    fragement.querySelector(".pays")
+    fragment.querySelector(".pays")
       .appendChild(p)
   }
 
-  fragement.querySelector(".list-item__thumbnail").src = `https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/personnes/${personne.personne_id}.jpg`
+  fragment.querySelector(".list-item__thumbnail").src = `https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/personnes/${personne.personne_id}.jpg`
 
   const international = new Intl.DateTimeFormat("fr-FR", {
     year: "numeric",
@@ -70,15 +70,15 @@ function createItemActeur(index) {
   let naissance = new Date(personne.naissance)
   let naissanceformat = international.format(naissance);
 
-  fragement.querySelector(".naissance")
+  fragment.querySelector(".naissance")
     .appendChild(document.createTextNode(naissanceformat));
 
   // court-circuit &&
-  personne.deces && fragement.querySelector(".deces")
+  personne.deces && fragment.querySelector(".deces")
     .appendChild(document.createTextNode(
       international.format(new Date(personne.deces))));
 
-  fragement.addEventListener("click", function (evt) {
+  fragment.addEventListener("click", function (evt) {
     onsenNavigator.pushPage('films.html', {
       data: {
         title: `${personne.nom}`,
@@ -87,7 +87,7 @@ function createItemActeur(index) {
     });
   });
 
-  fragement.dataset.uuid = personne.personne_id;
-  //liste.appendChild(fragement);
-  return fragement;
+  fragment.dataset.uuid = personne.personne_id;
+  //liste.appendChild(fragment);
+  return fragment;
 }
