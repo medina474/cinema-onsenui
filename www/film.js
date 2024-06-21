@@ -46,14 +46,14 @@ async function getFilm(page) {
       .appendChild(document.createTextNode(film.slogan));
   }
 
-  if (film.resume) {
+  if (film.resumes) {
     page.querySelector(".resume")
-      .appendChild(document.createTextNode(film.resume));
+      .appendChild(document.createTextNode(film.resumes[0].resume));
   }
 
-  if (film.franchise) {
+  if (film.franchises) {
     page.querySelector(".franchise")
-      .appendChild(document.createTextNode(film.franchise));
+      .appendChild(document.createTextNode(film.franchises.franchise));
   }
 
   if (film.societes) {
@@ -79,7 +79,7 @@ async function getFilm(page) {
     .appendChild(document.createTextNode(getDuree(film.duree)));
 
   page.querySelector(".genres")
-    .appendChild(document.createTextNode(film.genres.join(', ')));
+    .appendChild(document.createTextNode(film.genres.map(elt => elt.genre).join(', ')));
 
   loadImage(`https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/films/${page.data.id}.jpg`,
     page.querySelector("img"));
@@ -91,12 +91,12 @@ async function getFilm(page) {
     ons.createElement('vignette_acteur', { append: true })
       .then(function (vignette) {
         vignette.querySelector(".nom")
-          .appendChild(document.createTextNode(acteur.nom));
+          .appendChild(document.createTextNode(acteur.acteurs.nom));
 
         vignette.querySelector(".alias")
-          .appendChild(document.createTextNode(acteur.alias.join(', ')));
+          .appendChild(document.createTextNode(acteur.alias));
 
-        loadImage(`https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/personnes/${acteur.personne_id}.jpg`,
+        loadImage(`https://morseweiswlpykaugwtd.supabase.co/storage/v1/object/public/personnes/${acteur.acteurs.personne_id}.jpg`,
           vignette.querySelector("img"));
 
         page.querySelector(".acteurs").appendChild(vignette);
