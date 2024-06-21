@@ -17,6 +17,7 @@
   <script src="cluster/leaflet.markercluster.js"></script>
   <link rel="manifest" href="manifest.json" /> 
   <meta name="theme-color" value="#663399">
+  <script src="i.js" type="module"></script>
   <style>
     :root {
       --notification-font-size: 11px;
@@ -56,6 +57,15 @@
     #page_films .genres {
       font-size: var(--font-size--mini);
     }
+
+
+body.barcode-scanner-active {
+  visibility: hidden;
+}
+
+.barcode-scanner-modal {
+  visibility: visible;
+}
  </style>
  <script>navigator.serviceWorker.register("service-worker.js")</script> 
 </head>
@@ -113,7 +123,7 @@
       getFilm(page);
     }
     else if (page.id === 'ticket') {
-      afficheTicket();
+      startScan();
     }
   });
 
